@@ -22,7 +22,17 @@ const index = (req, res) => {
 //show
 const show = (req, res) => {
     const id = req.params.id;
-    res.send(`Dettaglio del film con id ${id}`)
+    const sql = `SELECT *
+    FROM movies
+    WHERE movies.id = ?`
+
+    connection.query(sql, [id], (err, results) => {
+        if (err) return res.status(500).json({ error: 'Query not found' });
+        if (results.length === 0) return res.status(404).json({ error: 'Film non trovato' })
+        res.json(results)
+
+    })
+
 }
 
 
