@@ -21,6 +21,10 @@ app.use((req, res, next) => {
     });
 });
 
+app.use((err, req, res, next) => {
+    res.status(500).json({ error: "Errore" });
+});
+
 app.listen(port, () => {
     console.log(`Sono in ascolto sulla porta ${port}`);
 
