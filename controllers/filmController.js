@@ -15,7 +15,7 @@ const index = (req, res) => {
                 image: imgPath + movie.image
             }
         })
-        res.json(results)
+        res.json(movies)
     })
 }
 
@@ -29,15 +29,29 @@ const show = (req, res) => {
     connection.query(sql, [id], (err, results) => {
         if (err) return res.status(500).json({ error: 'Query not found' });
         if (results.length === 0) return res.status(404).json({ error: 'Film non trovato' })
-        res.json(results)
+
+
+        res.json(results[0])
+
 
     })
 
 }
 
+const postReview = (req, res) => {
+    const id = req.params.id
+    const { text, vote, name } = req.body;
+    const sql = 'INSERT INTO reviews (text, vote, name, movie_id) VALUES (?,?,?,?)'
 
+    connection.query(sql, [text, vote, name, id], (err, results) => {
+        if (err) return res.status(500).json({ error: 'Query not found' })
+        res.status(201)
+        res.json({ message: 'Review added', id: results.insertId })
+    })
+}
 
 module.exports = {
     index,
     show,
+    postReview
 }
