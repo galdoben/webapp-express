@@ -68,8 +68,28 @@ const postReview = (req, res) => {
     })
 }
 
+const postMovie = (req, res) => {
+
+    const { title, director, abstract } = req.body;
+    const imageName = req.file ? req.file.filename : null;
+    const sql = 'INSERT INTO movies (title, director, abstract, image) VALUES (?,?,?,?)'
+
+    connection.query(
+        sql,
+        [title, director, abstract, imageName],
+        (err, results) => {
+            if (err) return res.status(500).json({ error: 'Query not found' })
+            res.status(201).json({ status: 'success', message: 'Film Aggiunto' })
+        }
+    )
+
+
+    // res.json({ message: 'Aggiungo film' })
+}
+
 module.exports = {
     index,
     show,
-    postReview
+    postReview,
+    postMovie
 }
