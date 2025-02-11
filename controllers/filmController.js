@@ -22,16 +22,34 @@ const index = (req, res) => {
 //show
 const show = (req, res) => {
     const id = req.params.id;
-    const sql = `SELECT *
+    const sql = `SELECT movies.*, ROUND(AVG(reviews.vote)) AS average_vote
     FROM movies
-    WHERE movies.id = ?`
+    LEFT JOIN reviews ON movies.id = reviews.movie_id
+    WHERE movies.id = ?
+    GROUP BY movies.id`
+
+    const sqlReviews = `SELECT * 
+    FROM reviews
+    WHERE reviews.movie_id = ?
+    `
 
     connection.query(sql, [id], (err, results) => {
         if (err) return res.status(500).json({ error: 'Query not found' });
         if (results.length === 0) return res.status(404).json({ error: 'Film non trovato' })
 
+        //recensioni
+        connection.query(sqlReviews, [id], (err, resultsReviews) => {
+            if (err) return res.status(500).json({ error: 'Query not found' });
 
-        res.json(results[0])
+
+            const movie = (results[0])
+            res.json({
+                ...movie,
+                image: req.imgPath + movie.image,
+                reviews: resultsReviews
+            })
+
+        })
 
 
     })
